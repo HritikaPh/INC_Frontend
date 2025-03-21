@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import ReactPlayer from "react-player";
 import "../styles/HomePage.css";
 
+const API_URL = process.env.REACT_APP_BACKEND_API_URL;
+
 const HomePage = () => {
   const [videos, setVideos] = useState([]);
   const [selectedVideo, setSelectedVideo] = useState(null);
@@ -9,7 +11,7 @@ const HomePage = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("https://api.example.com/videos") // Replace with actual API URL
+    fetch(`${API_URL}/videos`)
       .then((response) => response.json())
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
@@ -56,7 +58,53 @@ const HomePage = () => {
   }, []);
 
   const handleSearch = (e) => {
-    setSearchQuery(e.target.value.toLowerCase());
+    const query = e.target.value;
+    setSearchQuery(query);
+
+    fetch(`${API_URL}/search?query=${query}`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setVideos(data);
+        } else {
+          setError("No search results found.");
+        }
+      })
+      .catch(() => setError("Error fetching search results."));
+  };
+
+  const handleUpload = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append("video", file);
+
+      try {
+        const response = await fetch(`${API_URL}/upload`, {
+          method: "POST",
+          body: formData,
+        });
+        const data = await response.json();
+
+        if (data.success) {
+          const newVideo = {
+            id: data.video_id,
+            title: file.name,
+            description: "Uploaded Video",
+            src: data.videoUrl,
+            tags: ["Uploaded"],
+          };
+          setVideos([...videos, newVideo]);
+
+          // Call analyze API after successful upload
+          await fetch(`${API_URL}/analyze/${data.video_id}`, {
+            method: "GET",
+          });
+        }
+      } catch (error) {
+        setError("Upload failed. Please try again.");
+      }
+    }
   };
 
   return (
@@ -69,7 +117,12 @@ const HomePage = () => {
           placeholder="🔍 Search for a video..."
           className="search-bar"
           onChange={handleSearch}
+          value={searchQuery}
         />
+        <label className="upload-button">
+          Upload Video
+          <input type="file" accept="video/*" onChange={handleUpload} style={{ display: "none" }} />
+        </label>
       </div>
 
       {selectedVideo && (
@@ -98,28 +151,22 @@ const HomePage = () => {
       {error && <p className="error-message">{error}</p>}
 
       <div className="video-grid">
-        {videos
-          .filter(
-            (video) =>
-              video.title.toLowerCase().includes(searchQuery) ||
-              video.tags.some((tag) => tag.toLowerCase().includes(searchQuery))
-          )
-          .map((video) => (
-            <div key={video.id} className="video-item" onClick={() => setSelectedVideo(video)}>
-              <ReactPlayer url={video.src} light controls width="100%" height="200px" />
-              <div className="video-details">
-                <h3 className="video-card-title">{video.title}</h3>
-                <p className="video-card-description">{video.description}</p>
-                <div className="video-card-tags">
-                  {video.tags.map((tag, index) => (
-                    <span key={index} className="card-tag">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+        {videos.map((video) => (
+          <div key={video.id} className="video-item" onClick={() => setSelectedVideo(video)}>
+            <ReactPlayer url={video.src} light controls width="100%" height="200px" />
+            <div className="video-details">
+              <h3 className="video-card-title">{video.title}</h3>
+              <p className="video-card-description">{video.description}</p>
+              <div className="video-card-tags">
+                {video.tags.map((tag, index) => (
+                  <span key={index} className="card-tag">
+                    {tag}
+                  </span>
+                ))}
               </div>
             </div>
-          ))}
+          </div>
+        ))}
       </div>
     </div>
   );
