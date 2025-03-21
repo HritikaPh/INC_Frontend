@@ -38,7 +38,8 @@
   background-color: #ff7b00;
   padding: 15px 18px;
   color: white;
-  border-radius: 25px;
+  border-radius:25px;
+  border-color: #ff7b00;
   cursor: pointer;
   font-weight: bold;
   transition: background 0.3s;
