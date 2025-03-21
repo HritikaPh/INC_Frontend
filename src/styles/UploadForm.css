@@ -2,15 +2,15 @@
     max-width: 400px;
     margin: 50px auto;
     padding: 20px;
-    background-color: #181c29; /*GSSoC Theme Dark Blue*/
-    color: white;
+    background-color: #ffffff; /* Light theme background */
+    color: #333; /* Dark text for contrast */
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   }
   
-  h2 {
+  h1 {
     text-align: center;
-    color: #ffcc00; /* GSSoC Accent Color */
+    color: #ff9800; /* GSSoC Accent Color */
   }
   
   form {
@@ -22,15 +22,20 @@
   textarea {
     margin: 10px 0;
     padding: 10px;
-    border: 1px solid #ffcc00;
+    border: 1px solid #ff9800; /* Accent border */
     border-radius: 5px;
-    background: #242a40;
-    color: white;
+    background: #f8f9fa; /* Light input background */
+    color: #333;
+  }
+  
+  input::placeholder,
+  textarea::placeholder {
+    color: #888;
   }
   
   button {
-    background: #ffcc00;
-    color: black;
+    background: #ff9800;
+    color: white;
     border: none;
     padding: 10px;
     cursor: pointer;
@@ -40,13 +45,13 @@
   }
   
   button:hover {
-    background: #ffdb4d;
+    background: #ffa726;
   }
   
   .message {
     text-align: center;
     margin-top: 10px;
     font-size: 14px;
-    color: #ffcc00;
+    color: #ff9800;
   }
   

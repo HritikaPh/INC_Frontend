@@ -36,7 +36,7 @@ const UploadForm = () => {
 
         // Redirect to HomePage immediately after upload
         navigate("/");
-        
+
       } else {
         setMessage("Upload failed. Try again.");
       }
@@ -48,7 +48,7 @@ const UploadForm = () => {
 
   return (
     <div className="upload-container">
-      <h2>Upload Video</h2>
+      <h1>Upload Video</h1>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
